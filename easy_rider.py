@@ -1,14 +1,12 @@
 """
-(五) 到站时间
-检查即将到来的站点的到达时间是否合理：它们应该增加。
-在此阶段，您需要更新检查 a_time 错误：合并之前的格式和类型检查与正确到达时间的检查。
+(六) 按需停靠站
+按需停靠站（标记为字母 O）不能是起始站、终点站或换乘站。
+在此阶段，您需要使用第 4 阶段的检查来识别错误标记为 O 的站点，并仅显示正确的按需站点。
 
 目标：
 1. 输入包含 JSON 格式数据的字符串。
-2. 检查给定公交线路的即将到来的站点的到达时间是否正在增加。
-请注意，每条单独的公交路线已经根据停靠点的顺序进行了排序。
-3. 如果下一站的到达时间早于或等于当前停靠点的时间，请停止检查该公交线路并注意错误的站点。
-将错误事例数与 a_time 错误总数相加。对于正确的停止点，不要显示任何内容。
+2. 检查所有出发点、终点站和换乘站是否不是“按需”。
+3. 显示标有 O 的非起点、终点或转运停靠点的停靠点。
 4. 输出的格式应与示例中所示的格式相同。
 
 示例1：
@@ -26,7 +24,7 @@
         "stop_id": 3,
         "stop_name": "Elm Street",
         "next_stop": 5,
-        "stop_type": "",
+        "stop_type": "O",
         "a_time": "08:19"
     },
     {
@@ -35,7 +33,7 @@
         "stop_name": "Fifth Avenue",
         "next_stop": 7,
         "stop_type": "O",
-        "a_time": "08:17"
+        "a_time": "08:25"
     },
     {
         "bus_id": 128,
@@ -43,7 +41,7 @@
         "stop_name": "Sesame Street",
         "next_stop": 0,
         "stop_type": "F",
-        "a_time": "08:07"
+        "a_time": "08:37"
     },
     {
         "bus_id": 256,
@@ -64,16 +62,16 @@
     {
         "bus_id": 256,
         "stop_id": 6,
-        "stop_name": "Sunset Boulevard",
+        "stop_name": "Abbey Road",
         "next_stop": 7,
-        "stop_type": "",
-        "a_time": "09:44"
+        "stop_type": "O",
+        "a_time": "09:59"
     },
     {
         "bus_id": 256,
         "stop_id": 7,
         "stop_name": "Sesame Street",
-        "next_stop": "0",
+        "next_stop": 0,
         "stop_type": "F",
         "a_time": "10:12"
     },
@@ -88,116 +86,20 @@
     {
         "bus_id": 512,
         "stop_id": 6,
-        "stop_name": "Sunset Boulevard",
+        "stop_name": "Abbey Road",
         "next_stop": 0,
         "stop_type": "F",
         "a_time": "08:16"
     }
 ]
 
-Type and field validation: 6 errors
+Type and field validation: 0 errors
 bus_id: 0
-stop_id: 2
+stop_id: 0
 stop_name: 0
-next_stop: 1
+next_stop: 0
 stop_type: 0
-a_time: 3
-
-Line names and number of stops:
-bus_id: 128 stops: 4
-bus_id: 512 stops: 2
-There is no start or end stop for the line: 512
-
-示例2：
-[
-    {
-        "bus_id": 128,
-        "stop_id": 1,
-        "stop_name": "Prospekt Avenue",
-        "next_stop": 3,
-        "stop_type": "S",
-        "a_time": "08:12"
-    },
-    {
-        "bus_id": 128,
-        "stop_id": 3,
-        "stop_name": "Elm Street",
-        "next_stop": 5,
-        "stop_type": "",
-        "a_time": "8:19"
-    },
-    {
-        "bus_id": 128,
-        "stop_id": 5,
-        "stop_name": "Fifth Avenue",
-        "next_stop": 7,
-        "stop_type": "O",
-        "a_time": "08:25"
-    },
-    {
-        "bus_id": 128,
-        "stop_id": "7",
-        "stop_name": "Sesame Street",
-        "next_stop": 0,
-        "stop_type": "F",
-        "a_time": "08:77"
-    },
-    {
-        "bus_id": 256,
-        "stop_id": 2,
-        "stop_name": "Pilotow Street",
-        "next_stop": 3,
-        "stop_type": "S",
-        "a_time": "09:20"
-    },
-    {
-        "bus_id": 256,
-        "stop_id": 3,
-        "stop_name": "Elm Street",
-        "next_stop": 6,
-        "stop_type": "",
-        "a_time": "09:45"
-    },
-    {
-        "bus_id": 256,
-        "stop_id": 6,
-        "stop_name": "Sunset Boulevard",
-        "next_stop": 7,
-        "stop_type": "",
-        "a_time": "09:59"
-    },
-    {
-        "bus_id": 256,
-        "stop_id": 7,
-        "stop_name": "Sesame Street",
-        "next_stop": "0",
-        "stop_type": "F",
-        "a_time": "10.12"
-    },
-    {
-        "bus_id": 512,
-        "stop_id": 4,
-        "stop_name": "Bourbon Street",
-        "next_stop": 6,
-        "stop_type": "S",
-        "a_time": "38:13"
-    },
-    {
-        "bus_id": 512,
-        "stop_id": 6,
-        "stop_name": "Sunset Boulevard",
-        "next_stop": 0,
-        "stop_type": "F",
-        "a_time": "08:16"
-    }
-]
-Type and field validation: 6 errors
-bus_id: 0
-stop_id: 1
-stop_name: 0
-next_stop: 1
-stop_type: 0
-a_time: 4
+a_time: 0
 
 Line names and number of stops:
 bus_id: 128 stops: 4
@@ -205,8 +107,9 @@ bus_id: 256 stops: 4
 bus_id: 512 stops: 2
 
 Start stops: 3 ['Bourbon Street', 'Pilotow Street', 'Prospekt Avenue']
-Transfer stops: 3 ['Elm Street', 'Sesame Street', 'Sunset Boulevard']
-Finish stops: 2 ['Sesame Street', 'Sunset Boulevard']
+Transfer stops: 3 ['Abbey Road', 'Elm Street', 'Sesame Street']
+Finish stops: 2 ['Abbey Road', 'Sesame Street']
+On demand stops: 1 ['Fifth Avenue']
 """ 
 
 import json
@@ -635,9 +538,39 @@ def find_special_stops(data):
     5. 如果公交线路不符合此条件，请停止检查并打印有关它的消息。不要继续检查其他公交线路。
     如，bus_id: 512 没有起点或终点站，则输出：There is no start or end stop for the line: 512
     """
+    """
+    (六) 按需停靠站
+    按需停靠站（标记为字母 O）不能是起始站、终点站或换乘站。
+    在此阶段，您需要使用第 4 阶段的检查来识别错误标记为 O 的站点，并仅显示正确的按需站点。
+
+    目标：
+    1. 输入包含 JSON 格式数据的字符串。
+    2. 检查所有出发点、终点站和换乘站是否不是“按需”。
+    3. 显示标有 O 的非起点、终点或转运停靠点的停靠点。
+    4. 输出的格式应与示例中所示的格式相同。
+
+    示例：
+    [
+        {"bus_id": 128, "stop_name": "Prospekt Avenue", "stop_type": "S"},
+        {"bus_id": 128, "stop_name": "Elm Street", "stop_type": "O"},
+        {"bus_id": 128, "stop_name": "Fifth Avenue", "stop_type": "O"},
+        {"bus_id": 128, "stop_name": "Sesame Street", "stop_type": "F"},
+        {"bus_id": 256, "stop_name": "Pilotow Street", "stop_type": "S"},
+        {"bus_id": 256, "stop_name": "Elm Street", "stop_type": ""},
+        {"bus_id": 256, "stop_name": "Abbey Road", "stop_type": "O"},
+        {"bus_id": 256, "stop_name": "Sesame Street", "stop_type": "F"},
+        {"bus_id": 512, "stop_name": "Bourbon Street", "stop_type": "S"},
+        {"bus_id": 512, "stop_name": "Abbey Road", "stop_type": "F"}
+    ]
+
+    Start stops: 3 ['Bourbon Street', 'Pilotow Street', 'Prospekt Avenue']
+    Transfer stops: 3 ['Abbey Road', 'Elm Street', 'Sesame Street']
+    Finish stops: 2 ['Abbey Road', 'Sesame Street']
+    On demand stops: 1 ['Fifth Avenue']
+    """
     # 1. 结构初始化
     bus_info = {}                   # {bus_id: {"start": int, "finish": int}}
-    start_stops, finish_stops = set(), set()
+    start_stops, finish_stops, o_stops = set(), set(), set()
     stop_to_buses = {}              # {stop_name: set(bus_id)}
 
     # 2. 单次遍历收集信息
@@ -654,6 +587,8 @@ def find_special_stops(data):
         if stop_type == "F":
             bus_info[bus_id]["finish"] += 1
             finish_stops.add(stop_name)
+        if stop_type == "O":
+            o_stops.add(stop_name)
 
         # 建立站点 → 线路映射
         stop_to_buses.setdefault(stop_name, set()).add(bus_id)
@@ -664,15 +599,22 @@ def find_special_stops(data):
             print(f"There is no start or end stop for the line: {bid}")
             return                          # 直接结束，不再做后续统计
 
-    # 4. 计算换乘站（≥2 条线路共用）
-    transfer_stops = sorted(
+    # ---------- 4. 计算换乘站（保持为 set） ----------
+    transfer_stops = {
         stop for stop, buses in stop_to_buses.items() if len(buses) >= 2
+    }
+
+    # ---------- 5. 合法按需站 ----------
+    correct_on_demand = sorted(
+        o_stops - start_stops - finish_stops - transfer_stops
     )
 
-    # 5. 输出结果
+    # ---------- 6. 输出 ----------
     print(f"Start stops: {len(start_stops)} {sorted(start_stops)}")
-    print(f"Transfer stops: {len(transfer_stops)} {transfer_stops}")
+    print(f"Transfer stops: {len(transfer_stops)} {sorted(transfer_stops)}")
     print(f"Finish stops: {len(finish_stops)} {sorted(finish_stops)}")
+    print(f"On demand stops: {len(correct_on_demand)} {correct_on_demand}")
+
 
 if __name__ == "__main__":
     # Read input from stdin
