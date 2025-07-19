@@ -1,3 +1,105 @@
+"""
+(三) 公交线路信息
+是时候检查我们有多少条公交线路以及每条线路包括多少个站点了。
+在我们进一步整理数据库之前，最好检查信息是否完整。
+
+目标：
+1. 输入包含 JSON 格式数据的字符串。
+2. 像以前一样检查数据类型、必填字段和格式。
+3. 查找所有公交线路的名称。
+4. 验证每条线路的停靠点数。
+5. 输出的格式应与示例中所示的格式相同。
+
+示例：
+[
+    {
+        "bus_id": 128,
+        "stop_id": 1,
+        "stop_name": "Prospekt Av.",
+        "next_stop": 3,
+        "stop_type": "S",
+        "a_time": "08:12"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": 3,
+        "stop_name": "Elm Street",
+        "next_stop": 5,
+        "stop_type": "",
+        "a_time": "8:19"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": 5,
+        "stop_name": "Fifth Avenue",
+        "next_stop": 7,
+        "stop_type": "K",
+        "a_time": "08:25"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": "7",
+        "stop_name": "Sesame Street",
+        "next_stop": 0,
+        "stop_type": "F",
+        "a_time": "08:77"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 2,
+        "stop_name": "Pilotow Street",
+        "next_stop": 3,
+        "stop_type": "S",
+        "a_time": "09:20"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 3,
+        "stop_name": "Elm",
+        "next_stop": 6,
+        "stop_type": "",
+        "a_time": "09:45"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 6,
+        "stop_name": "Sunset Boulevard",
+        "next_stop": 7,
+        "stop_type": "A",
+        "a_time": "09:59"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 7,
+        "stop_name": "Sesame Street",
+        "next_stop": "0",
+        "stop_type": "F",
+        "a_time": "10.12"
+    },
+    {
+        "bus_id": 512,
+        "stop_id": 4,
+        "stop_name": "bourbon street",
+        "next_stop": 6,
+        "stop_type": "S",
+        "a_time": "38:13"
+    },
+    {
+        "bus_id": 512,
+        "stop_id": 6,
+        "stop_name": "Sunset Boulevard",
+        "next_stop": 0,
+        "stop_type": "F",
+        "a_time": "08:16"
+    }
+]
+
+Line names and number of stops:
+bus_id: 128 stops: 4
+bus_id: 256 stops: 4
+bus_id: 512 stops: 2
+""" 
+
 import json
 import re
     
@@ -298,6 +400,38 @@ def validate_syntax(data):
         print(f"{field}: {count}")
 
 
+def find_bus_lines(data):
+    """
+    (三) 公交线路信息
+    目标：
+    1. 输入包含 JSON 格式数据的字符串。
+    2. 像以前一样检查数据类型、必填字段和格式。
+    3. 查找所有公交线路的名称。
+    4. 验证每条线路的停靠点数。
+    5. 输出的格式应与示例中所示的格式相同。
+
+    示例输出：
+
+    Line names and number of stops:
+    bus_id: 128 stops: 4
+    bus_id: 256 stops: 4
+    bus_id: 512 stops: 2
+    """
+    bus_lines = {}
+    
+    for entry in data:
+        bus_id = entry.get("bus_id")
+        if bus_id is not None:
+            if bus_id not in bus_lines:
+                bus_lines[bus_id] = 0
+            bus_lines[bus_id] += 1
+    
+    print()
+    print("Line names and number of stops:")
+    for bus_id, stops in bus_lines.items():
+        print(f"bus_id: {bus_id} stops: {stops}")
+
+
 if __name__ == "__main__":
     # Read input from stdin
     input_data = input().strip()
@@ -306,5 +440,6 @@ if __name__ == "__main__":
     try:
         bus_line_data = json.loads(input_data)
         validate_syntax(bus_line_data)
+        find_bus_lines(bus_line_data)
     except json.JSONDecodeError:
         print("Invalid JSON input")
