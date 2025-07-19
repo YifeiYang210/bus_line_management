@@ -1,17 +1,15 @@
 """
-(四) 特殊站点
-在，您可以检查内容是否正确：每条公交线路应有一个起点 （S） 和一个终点 （F）。
-您需要准备一个适当的函数来计算这些数据，以便将来不必手动检查它。
+(五) 到站时间
+检查即将到来的站点的到达时间是否合理：它们应该增加。
+在此阶段，您需要更新检查 a_time 错误：合并之前的格式和类型检查与正确到达时间的检查。
 
 目标：
 1. 输入包含 JSON 格式数据的字符串。
-2. 像以前一样检查数据类型、必填字段和格式。
-3. 查找所有公交线路的名称，并像以前一样验证每条线路的站点数量。
-4. 确保每条公交线路恰好有一个起点 （S） 和一个终点 （F）。
-5. 如果公交线路不符合此条件，请停止检查并打印有关它的消息。不要继续检查其他公交线路。
-6. 如果所有公交线路都符合条件，就统计有多少个起点和终点站。按字母顺序打印其唯一名称。
-7. 计算换乘站并按字母顺序打印其唯一名称。换乘站是至少两条公交线路共用的站点。
-8. 输出的格式应与示例中所示的格式相同。按起始站，换乘站，终点站的顺序换行打印。
+2. 检查给定公交线路的即将到来的站点的到达时间是否正在增加。
+请注意，每条单独的公交路线已经根据停靠点的顺序进行了排序。
+3. 如果下一站的到达时间早于或等于当前停靠点的时间，请停止检查该公交线路并注意错误的站点。
+将错误事例数与 a_time 错误总数相加。对于正确的停止点，不要显示任何内容。
+4. 输出的格式应与示例中所示的格式相同。
 
 示例1：
 [
@@ -21,7 +19,7 @@
         "stop_name": "Prospekt Avenue",
         "next_stop": 3,
         "stop_type": "S",
-        "a_time": "08.12"
+        "a_time": "08:12"
     },
     {
         "bus_id": 128,
@@ -33,26 +31,58 @@
     },
     {
         "bus_id": 128,
-        "stop_id": "five",
+        "stop_id": 5,
         "stop_name": "Fifth Avenue",
         "next_stop": 7,
         "stop_type": "O",
-        "a_time": "08:25"
+        "a_time": "08:17"
     },
     {
         "bus_id": 128,
         "stop_id": 7,
         "stop_name": "Sesame Street",
+        "next_stop": 0,
+        "stop_type": "F",
+        "a_time": "08:07"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 2,
+        "stop_name": "Pilotow Street",
+        "next_stop": 3,
+        "stop_type": "S",
+        "a_time": "09:20"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 3,
+        "stop_name": "Elm Street",
+        "next_stop": 6,
+        "stop_type": "",
+        "a_time": "09:45"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 6,
+        "stop_name": "Sunset Boulevard",
+        "next_stop": 7,
+        "stop_type": "",
+        "a_time": "09:44"
+    },
+    {
+        "bus_id": 256,
+        "stop_id": 7,
+        "stop_name": "Sesame Street",
         "next_stop": "0",
         "stop_type": "F",
-        "a_time": "08:77"
+        "a_time": "10:12"
     },
     {
         "bus_id": 512,
-        "stop_id": "",
+        "stop_id": 4,
         "stop_name": "Bourbon Street",
         "next_stop": 6,
-        "stop_type": "",
+        "stop_type": "S",
         "a_time": "08:13"
     },
     {
@@ -61,7 +91,7 @@
         "stop_name": "Sunset Boulevard",
         "next_stop": 0,
         "stop_type": "F",
-        "a_time": "38:16"
+        "a_time": "08:16"
     }
 ]
 
@@ -181,6 +211,7 @@ Finish stops: 2 ['Sesame Street', 'Sunset Boulevard']
 
 import json
 import re
+from typing import List, Dict, Any
     
 
 def validate_bus_line_data(data):
@@ -294,7 +325,50 @@ def validate_bus_line_data(data):
     next_stop: 1
     stop_type: 1
     a_time: 2
-"""
+    """
+    """
+    (五) 到站时间
+    检查即将到来的站点的到达时间是否合理：它们应该增加。
+    在此阶段，您需要更新检查 a_time 错误：合并之前的格式和类型检查与正确到达时间的检查。
+    目标：
+    1. 输入包含 JSON 格式数据的字符串。
+    2. 检查给定公交线路的即将到来的站点的到达时间是否正在增加。
+    请注意，每条单独的公交路线已经根据停靠点的顺序进行了排序。
+    3. 如果下一站的到达时间早于或等于当前停靠点的时间，请停止检查该公交线路并注意错误的站点。
+    将错误事例数与 a_time 错误总数相加。对于正确的停止点，不要显示任何内容。
+    4. 输出的格式应与示例中所示的格式相同。
+    示例1：
+    [
+        {"bus_id": 128, "a_time": "08:12"}, 
+        {"bus_id": 128, "a_time": "08:19"}, 
+        {"bus_id": 128, "a_time": "08:17"}, 
+        {"bus_id": 128, "a_time": "08:07"},
+        {"bus_id": 256, "a_time": "09:20"},
+        {"bus_id": 256, "a_time": "09:45"},
+        {"bus_id": 256, "a_time": "09:44"}, 
+        {"bus_id": 256, "a_time": "10:12"},
+        {"bus_id": 512, "a_time": "08:13"},
+        {"bus_id": 512, "a_time": "08:16"}
+    ]
+    Type and field validation: 6 errors
+    a_time: 3
+
+    示例2：
+    [
+        {"bus_id": 128, "a_time": "08:12"}, 
+        {"bus_id": 128, "a_time": "8:19"}, 
+        {"bus_id": 128, "a_time": "08:25"}, 
+        {"bus_id": 128, "a_time": "08:77"},
+        {"bus_id": 256, "a_time": "09:20"},
+        {"bus_id": 256, "a_time": "09:45"},
+        {"bus_id": 256, "a_time": "09:59"}, 
+        {"bus_id": 256, "a_time": "10.12"},
+        {"bus_id": 512, "a_time": "38:13"},
+        {"bus_id": 512, "a_time": "08:16"}
+    ]
+    Type and field validation: 6 errors
+    a_time: 4
+    """
     errors = {
         "bus_id": 0,
         "stop_id": 0,
@@ -457,6 +531,10 @@ def validate_syntax(data):
     stop_type_pattern = re.compile(r"^[SFO]?$")
     a_time_pattern = re.compile(r"^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$")
 
+    # 3. 辅助结构：记录每条线路上一站的到站时间（分钟数）及是否已出现顺序错误
+    last_time: Dict[int, int] = {}        # {bus_id: minutes}
+    broken_line: Dict[int, bool] = {}     # {bus_id: True}  → 一旦出错后续不再检查该线
+
     # dict.get如果键不存在，则返回默认值 None
     for entry in data:
         if not isinstance(entry.get("bus_id"), int):
@@ -471,7 +549,28 @@ def validate_syntax(data):
             errors["stop_type"] += 1
         if not a_time_pattern.match(entry.get("a_time", "")):
             errors["a_time"] += 1
-    
+
+        bus_id = entry.get("bus_id")
+        a_time = entry.get("a_time")
+        minutes_now = int(a_time[:2]) * 60 + int(a_time[3:])
+
+        # 如果此前该线路已发现递增性错误，跳过继续下一条记录
+        if broken_line.get(bus_id, False):
+            continue
+
+        # 第一次看到该线路
+        if bus_id not in last_time:
+            last_time[bus_id] = minutes_now
+            continue
+
+        # 递增性判断
+        if minutes_now <= last_time[bus_id]:
+            errors["a_time"] += 1          # 与格式错误合并计数
+            broken_line[bus_id] = True     # 标记该线路后续不再检查
+            # 不更新 last_time，直接进入下一条
+        else:
+            last_time[bus_id] = minutes_now
+
     total_errors = sum(errors.values())
     
     print(f"Type and field validation: {total_errors} errors")
