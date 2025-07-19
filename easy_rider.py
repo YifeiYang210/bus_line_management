@@ -1,21 +1,89 @@
 """
-(三) 公交线路信息
-是时候检查我们有多少条公交线路以及每条线路包括多少个站点了。
-在我们进一步整理数据库之前，最好检查信息是否完整。
+(四) 特殊站点
+在，您可以检查内容是否正确：每条公交线路应有一个起点 （S） 和一个终点 （F）。
+您需要准备一个适当的函数来计算这些数据，以便将来不必手动检查它。
 
 目标：
 1. 输入包含 JSON 格式数据的字符串。
 2. 像以前一样检查数据类型、必填字段和格式。
-3. 查找所有公交线路的名称。
-4. 验证每条线路的停靠点数。
-5. 输出的格式应与示例中所示的格式相同。
+3. 查找所有公交线路的名称，并像以前一样验证每条线路的站点数量。
+4. 确保每条公交线路恰好有一个起点 （S） 和一个终点 （F）。
+5. 如果公交线路不符合此条件，请停止检查并打印有关它的消息。不要继续检查其他公交线路。
+6. 如果所有公交线路都符合条件，就统计有多少个起点和终点站。按字母顺序打印其唯一名称。
+7. 计算换乘站并按字母顺序打印其唯一名称。换乘站是至少两条公交线路共用的站点。
+8. 输出的格式应与示例中所示的格式相同。按起始站，换乘站，终点站的顺序换行打印。
 
-示例：
+示例1：
 [
     {
         "bus_id": 128,
         "stop_id": 1,
-        "stop_name": "Prospekt Av.",
+        "stop_name": "Prospekt Avenue",
+        "next_stop": 3,
+        "stop_type": "S",
+        "a_time": "08.12"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": 3,
+        "stop_name": "Elm Street",
+        "next_stop": 5,
+        "stop_type": "",
+        "a_time": "08:19"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": "five",
+        "stop_name": "Fifth Avenue",
+        "next_stop": 7,
+        "stop_type": "O",
+        "a_time": "08:25"
+    },
+    {
+        "bus_id": 128,
+        "stop_id": 7,
+        "stop_name": "Sesame Street",
+        "next_stop": "0",
+        "stop_type": "F",
+        "a_time": "08:77"
+    },
+    {
+        "bus_id": 512,
+        "stop_id": "",
+        "stop_name": "Bourbon Street",
+        "next_stop": 6,
+        "stop_type": "",
+        "a_time": "08:13"
+    },
+    {
+        "bus_id": 512,
+        "stop_id": 6,
+        "stop_name": "Sunset Boulevard",
+        "next_stop": 0,
+        "stop_type": "F",
+        "a_time": "38:16"
+    }
+]
+
+Type and field validation: 6 errors
+bus_id: 0
+stop_id: 2
+stop_name: 0
+next_stop: 1
+stop_type: 0
+a_time: 3
+
+Line names and number of stops:
+bus_id: 128 stops: 4
+bus_id: 512 stops: 2
+There is no start or end stop for the line: 512
+
+示例2：
+[
+    {
+        "bus_id": 128,
+        "stop_id": 1,
+        "stop_name": "Prospekt Avenue",
         "next_stop": 3,
         "stop_type": "S",
         "a_time": "08:12"
@@ -33,7 +101,7 @@
         "stop_id": 5,
         "stop_name": "Fifth Avenue",
         "next_stop": 7,
-        "stop_type": "K",
+        "stop_type": "O",
         "a_time": "08:25"
     },
     {
@@ -55,7 +123,7 @@
     {
         "bus_id": 256,
         "stop_id": 3,
-        "stop_name": "Elm",
+        "stop_name": "Elm Street",
         "next_stop": 6,
         "stop_type": "",
         "a_time": "09:45"
@@ -65,7 +133,7 @@
         "stop_id": 6,
         "stop_name": "Sunset Boulevard",
         "next_stop": 7,
-        "stop_type": "A",
+        "stop_type": "",
         "a_time": "09:59"
     },
     {
@@ -79,7 +147,7 @@
     {
         "bus_id": 512,
         "stop_id": 4,
-        "stop_name": "bourbon street",
+        "stop_name": "Bourbon Street",
         "next_stop": 6,
         "stop_type": "S",
         "a_time": "38:13"
@@ -93,11 +161,22 @@
         "a_time": "08:16"
     }
 ]
+Type and field validation: 6 errors
+bus_id: 0
+stop_id: 1
+stop_name: 0
+next_stop: 1
+stop_type: 0
+a_time: 4
 
 Line names and number of stops:
 bus_id: 128 stops: 4
 bus_id: 256 stops: 4
 bus_id: 512 stops: 2
+
+Start stops: 3 ['Bourbon Street', 'Pilotow Street', 'Prospekt Avenue']
+Transfer stops: 3 ['Elm Street', 'Sesame Street', 'Sunset Boulevard']
+Finish stops: 2 ['Sesame Street', 'Sunset Boulevard']
 """ 
 
 import json
@@ -432,6 +511,70 @@ def find_bus_lines(data):
         print(f"bus_id: {bus_id} stops: {stops}")
 
 
+def find_special_stops(data):
+    """
+    (四) 特殊站点
+    目标：
+    1. 确保每条公交线路恰好有一个起点（S）和一个终点（F）。
+    2. 如果所有公交线路都符合条件，就统计每条公交车线路有多少个起点和终点站。按字母顺序打印其唯一名称。
+    3. 计算换乘站并按字母顺序打印其唯一名称。换乘站是至少两条公交线路共用的站点。
+    4. 输出的格式应与示例中所示的格式相同。按每条公交车线路的起始站，换乘站，终点站的顺序换行打印。
+    如[
+        {"bus_id": 128,"stop_name": "Prospekt Avenue","stop_type": "S",},
+        {"bus_id": 128,"stop_name": "Elm Street","stop_type": "",},
+        {"bus_id": 128,"stop_name": "Fifth Avenue","stop_type": "O",},
+        {"bus_id": 128,"stop_name": "Sesame Street","stop_type": "F"},
+        {"bus_id": 256,"stop_name": "Pilotow Street","stop_type": "S"},
+        {"bus_id": 256,"stop_name": "Elm Street","stop_type": "O"},
+        {"bus_id": 256,"stop_name": "Sesame Street","stop_type": "F"},
+        {"bus_id": 512,"stop_name": "Bourbon Street","stop_type": "S"},
+        {"bus_id": 512,"stop_name": "Sunset Boulevard","stop_type": "F"},
+    ]
+    Start stops: 3 ['Bourbon Street', 'Pilotow Street', 'Prospekt Avenue']
+    Transfer stops: 3 ['Elm Street', 'Sesame Street', 'Sunset Boulevard']
+    Finish stops: 2 ['Sesame Street', 'Sunset Boulevard']
+    5. 如果公交线路不符合此条件，请停止检查并打印有关它的消息。不要继续检查其他公交线路。
+    如，bus_id: 512 没有起点或终点站，则输出：There is no start or end stop for the line: 512
+    """
+    # 1. 结构初始化
+    bus_info = {}                   # {bus_id: {"start": int, "finish": int}}
+    start_stops, finish_stops = set(), set()
+    stop_to_buses = {}              # {stop_name: set(bus_id)}
+
+    # 2. 单次遍历收集信息
+    for entry in data:
+        bus_id = entry.get("bus_id")
+        stop_name = entry.get("stop_name")
+        stop_type = entry.get("stop_type", "")
+
+        # 更新线路统计
+        bus_info.setdefault(bus_id, {"start": 0, "finish": 0})
+        if stop_type == "S":
+            bus_info[bus_id]["start"] += 1
+            start_stops.add(stop_name)
+        if stop_type == "F":
+            bus_info[bus_id]["finish"] += 1
+            finish_stops.add(stop_name)
+
+        # 建立站点 → 线路映射
+        stop_to_buses.setdefault(stop_name, set()).add(bus_id)
+
+    # 3. 验证每条线路恰好 1×S 与 1×F
+    for bid, cnt in bus_info.items():
+        if cnt["start"] != 1 or cnt["finish"] != 1:
+            print(f"There is no start or end stop for the line: {bid}")
+            return                          # 直接结束，不再做后续统计
+
+    # 4. 计算换乘站（≥2 条线路共用）
+    transfer_stops = sorted(
+        stop for stop, buses in stop_to_buses.items() if len(buses) >= 2
+    )
+
+    # 5. 输出结果
+    print(f"Start stops: {len(start_stops)} {sorted(start_stops)}")
+    print(f"Transfer stops: {len(transfer_stops)} {transfer_stops}")
+    print(f"Finish stops: {len(finish_stops)} {sorted(finish_stops)}")
+
 if __name__ == "__main__":
     # Read input from stdin
     input_data = input().strip()
@@ -441,5 +584,6 @@ if __name__ == "__main__":
         bus_line_data = json.loads(input_data)
         validate_syntax(bus_line_data)
         find_bus_lines(bus_line_data)
+        find_special_stops(bus_line_data)
     except json.JSONDecodeError:
         print("Invalid JSON input")
